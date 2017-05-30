@@ -1,0 +1,42 @@
+
+delphi的调用方法：
+function ManyStr(const pSS, pSourStr: Pchar): integer;stdcall;
+//该函数计算pSourStr中有多少个pSS
+
+function RangeStrToSql(const pRangeStr:Pchar;const ifLPad:boolean;const LPad:Char;const sWidth:integer;var pSqlStr:Pchar):boolean;stdcall;
+//范围字符串pRangeStr类似5,7-9,11 转换为('0005','0007','0008','0009','0011')
+
+function PosExt(const psubStr,pAllstr:Pchar;const Times:Byte):integer;stdcall;
+//加强型的Pos函数,取得psubStr在pAllstr中第Times次出现的位置
+//2006-02-23
+
+function MaxDotLen(const ACalaExp:PChar):integer;stdcall;
+//找到表达式中小数点位数的最大值.如56.5*100+23.01的值为2
+//此函数结果用于计算值的精确位数
+//2007-11-19
+
+function TryStrToFloatExt(const pSourStr:Pchar; var Value: Single): Boolean;stdcall;
+//加强型的TryStrToFloat函数,能提取字符串中第一个浮点数或整数。
+//例：StrTofloatExt(#$21+'-45.67'+'是')=-45.67
+//例：StrTofloatExt(#$21+'-.67'+'是')=-0.67
+//刘鹰；2003-5-8
+
+function GetVersionLY(const AFileName:Pchar):Pchar;stdcall;
+//获取文件的版本号,如0.0.7.1
+//刘鹰；2008-1-10
+
+function GetSysCurImeName: Pchar;stdcall;
+//取得系统当前的中文输入法名称 
+//刘鹰；2008-1-10
+
+function GetHDSn(const RootPath:Pchar):Pchar;stdcall;
+//取得指定分区的序列号 
+//刘鹰；2008-1-10
+
+function StrToHex(const ASourStr:Pchar):Pchar;stdcall;
+
+procedure WriteLog(const ALogStr: Pchar);stdcall;
+//写日志文件
+
+function LastPos(const ASubStr,ASourStr:Pchar):integer;stdcall;
+//取得ASubStr在ASourStr中最后一次出现的位置
