@@ -19,7 +19,9 @@ uses
   StrUtils{ReverseString},
   Math{RoundTo},
   ExtCtrls{Timage},
-  GIFImage{Tgifimage};
+  GIFImage{Tgifimage},
+  Graphics{TBitmap},
+  pngimage{TPNGObject};
 
 {$R *.res}
 
@@ -650,6 +652,35 @@ begin
   end;
 end;
 
+function Png2Bmp(const APngFile,ABmpFile:Pchar):boolean;stdcall;
+var
+  tmpPngFile,tmpBmpFile:string;
+
+  tmpBmp:TBitmap;
+  tmpPng:TPNGObject;  
+begin
+  result:=false;
+  
+  tmpPngFile:=strpas(APngFile);
+  tmpBmpFile:=strpas(ABmpFile);
+
+  if not FileExists(tmpPngFile) then exit;
+  if uppercase(ExtractFileExt(tmpPngFile))<>'.PNG' THEN EXIT;
+  if uppercase(ExtractFileExt(tmpBmpFile))<>'.BMP' THEN EXIT;
+  
+  tmpPng:= TPNGObject.Create;
+  tmpBmp:= TBitmap.Create;
+  try
+    tmpPng.LoadFromFile(tmpPngFile);
+    tmpBmp.Assign(tmpPng);
+    tmpBmp.SaveToFile(tmpBmpFile);
+    result:=true;
+  finally
+    FreeAndNil(tmpPng);
+    FreeAndNil(tmpBmp);
+  end;
+end;
+
 exports
 manystr,
 RangeStrToSql,
@@ -667,7 +698,8 @@ RealTo4Byte,
 WriteLog,
 LastPos,
 CassonEquation,
-Gif2Bmp;
+Gif2Bmp,
+Png2Bmp;
 
 begin
 end.
