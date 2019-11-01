@@ -681,6 +681,25 @@ begin
   end;
 end;
 
+function CRC16(AStr:ShortString):ShortString;stdcall;
+//参数可能为#$01#$00#$02的形式,故不能用PChar
+//返回值可能为#$00#$EB的形式,故不能用PChar
+//使用ShortString而非String,避免引用ShareMem单元及BORLNDMM.DLL
+//该函数使用ShortString类型,故只能Delphi调用
+//ShortString最多容纳255个字符
+var
+  crc1,crc2,i,idx:byte;
+begin
+  crc1:=$ff;crc2:=$ff;
+  for i:=1 to length(AStr) do
+  begin
+    idx:=crc2 xor ord(AStr[i]);
+    crc2:=crc1 xor CRCL[idx];
+    crc1:=CRCH[idx];
+  end;
+  result:=chr(crc2)+chr(crc1);
+end;
+
 exports
 manystr,
 RangeStrToSql,
@@ -699,7 +718,8 @@ WriteLog,
 LastPos,
 CassonEquation,
 Gif2Bmp,
-Png2Bmp;
+Png2Bmp,
+CRC16;
 
 begin
 end.
