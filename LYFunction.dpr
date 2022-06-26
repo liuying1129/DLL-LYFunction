@@ -606,6 +606,9 @@ BEGIN
 end;
 
 function ByteToReal(AByte1,AByte2,AByte3,AByte4:byte):single;stdcall;
+//标准IEEE 754浮点数表示法。存在大、小端两种模式,对应如下两种参数顺序
+//第3个字节,第4个字节,第1个字节,第2个字节
+//第4个字节,第3个字节,第2个字节,第1个字节
 var
   StrBin1,StrBin2,StrBin3,StrBin4:string;
   StrZ,StrF:string;
