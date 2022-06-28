@@ -1123,6 +1123,17 @@ begin
   end;
 end;
 
+function BcdToStr(const AByte:byte):Pchar;stdcall;
+//将BCD编码的1个字节转换为2个字符的字符串
+//BCD(Binary-Coded Decimal),用4位二进制数来表示1位十进制数中的0~9这10个数码
+//例:入参BCD码40,二进制为0010 1000,二进制0010的十进制为2,二进制1000的十进制为8,则BCD码40表示28(日期)
+begin
+  Result:=AllocMem(3);//分配内存空间并自动初始化为#0
+  Result[0]:=chr($30+AByte shr 4);
+  Result[1]:=chr($30+AByte and $0F);
+  //FreeMem();
+end;
+
 Exports
 manystr,
 RangeStrToSql,
@@ -1144,7 +1155,8 @@ Gif2Bmp,
 Png2Bmp,
 CRC16,
 EnCryptStr,
-DeCryptStr;
+DeCryptStr,
+BcdToStr;
 
 begin
 end.
