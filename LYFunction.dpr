@@ -609,6 +609,7 @@ function ByteToReal(AByte1,AByte2,AByte3,AByte4:byte):single;stdcall;
 //标准IEEE 754浮点数表示法。存在大、小端两种模式,对应如下两种参数顺序
 //第3个字节,第4个字节,第1个字节,第2个字节
 //第4个字节,第3个字节,第2个字节,第1个字节
+//在线转换工具:http://www.speedfly.cn/tools/hexconvert/
 var
   StrBin1,StrBin2,StrBin3,StrBin4:string;
   StrZ,StrF:string;
@@ -1131,7 +1132,7 @@ begin
   Result:=AllocMem(3);//分配内存空间并自动初始化为#0
   Result[0]:=chr($30+AByte shr 4);
   Result[1]:=chr($30+AByte and $0F);
-  //FreeMem();
+  //FreeMem();//AllocMem分配内存,一般为说需要释放!但返回值为pchar,怎么释放呢?
 end;
 
 Exports
