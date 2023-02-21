@@ -1135,6 +1135,51 @@ begin
   //FreeMem();//AllocMem分配内存,一般为说需要释放!但返回值为pchar,怎么释放呢?
 end;
 
+{
+ASCII码:1个字节,表示的字符数有限.如,不支持中文
+GB2312、GBK:中国定义的编码规则
+为避免每个国家定义一套自己的编码规则,ISO定义了Unicode
+Unicode:每个字符必须使用2个字节.缺点:Unicode传输数据时浪费带宽,存储数据时浪费硬盘
+比如,中国用Unicode表示\u4e2d\u56fd,其中\u表示16进制
+
+该函数的作用是将字符串中\u表示的Unicode编码转换为字符,其他部分不变
+例如,输入:中国abc\u4e2d\u56fd
+输出:中国abc中国
+}
+function UnicodeToChinese(const AUnicodeStr:PChar):PChar;stdcall;
+var
+  index: Integer;
+  temp, top, sStr, sResult: String;
+begin
+  sResult:='';
+  sStr:=AUnicodeStr;
+
+  index := Pos('\u', sStr);
+  while index > 0 do
+  begin
+    top := Copy(sStr, 1, index-1);//取出编码字符前的非Unicode编码的字符，如数字、字母等
+    temp := Copy(sStr, index+2, 4);//取出编码，不包括\u,如4e2d
+    Delete(sStr, 1, index + 5);
+    sResult := sResult + top + WideChar(StrToInt('$' + temp));
+     
+    index := Pos('\u', sStr);
+  end;
+  sResult:=sResult+sStr;
+  
+  //=======将string转换为pchar
+  try
+    GetMem(Result,length(sResult)+1) ;
+  except
+    Result := nil ;
+  end ;
+  if assigned(Result) then
+  begin
+    StrPLCopy(Result,sResult,length(sResult)) ;
+    Result[length(sResult)] := #0;
+  end;
+  //==============================  
+end;
+
 Exports
 manystr,
 RangeStrToSql,
@@ -1157,7 +1202,8 @@ Png2Bmp,
 CRC16,
 EnCryptStr,
 DeCryptStr,
-BcdToStr;
+BcdToStr,
+UnicodeToChinese;
 
 begin
 end.
