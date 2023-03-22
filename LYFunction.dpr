@@ -1180,6 +1180,118 @@ begin
   //==============================  
 end;
 
+function GetFirstValue(CurValue: string): string;//与LIS主程序的同名函数一样
+VAR
+  rCurValue,sCurValue:STRING;
+  i:integer;
+begin
+    RESULT:='';
+    for i :=length(CurValue) downto 1 do
+    begin
+      if not(CurValue[i] in ['0'..'9']) then
+      begin
+        if i=length(CurValue) then //最后一个字符为非数字
+        begin
+          exit;
+        end;
+        rCurValue:=Format('%.'+inttostr(length(CurValue)-i)+'d', [1]);//iMaxFieldValue
+        sCurValue:=copy(CurValue,1,i);
+        result:=sCurValue + rCurValue;
+        exit;
+      end else
+      begin
+        if i=1 then //全部为数字的情况
+        begin
+          rCurValue:=Format('%.'+inttostr(length(CurValue))+'d', [1]);//iMaxFieldValue
+          result:= rCurValue;
+          exit;
+        end;
+      end;
+    end;
+end;
+
+function GetNextValue(CurValue: string): string;//与LIS主程序的同名函数一样
+VAR
+  iCurValue,i:INTEGER;
+  rCurValue,sCurValue:STRING;
+begin
+    RESULT:='';
+    for i :=length(CurValue) downto 1 do
+    begin
+      if not(CurValue[i] in ['0'..'9']) then
+      begin
+        if i=length(CurValue) then //最后一个字符为非数字
+        begin
+          exit;
+        end;
+        iCurValue:=strtoint(copy(CurValue,i+1,length(CurValue)-i));
+        inc(iCurValue);
+        rCurValue:=Format('%.'+inttostr(length(CurValue)-i)+'d', [iCurValue]);//iMaxFieldValue
+        sCurValue:=copy(CurValue,1,i);
+        result:=sCurValue + rCurValue;
+        exit;
+      end else
+      begin
+        if i=1 then //全部为数字的情况
+        begin
+          iCurValue:=strtoint(CurValue);
+          inc(iCurValue);
+          rCurValue:=Format('%.'+inttostr(length(CurValue))+'d', [iCurValue]);//iMaxFieldValue
+          result:= rCurValue;
+          exit;
+        end;
+      end;
+    end;
+end;
+
+//根据工作组、前一个联机号、前一个联机号的日期获取下一个联机号
+//输入参数APreDate格式:YYYY-MM-DD
+//输入参数APreCheckID:用中文或英文状态的逗号分隔的多个联机号
+function GetMaxCheckID(const AWorkGroup,APreDate,APreCheckID:PChar):PChar;stdcall;
+var
+  sResult:String;
+  sList:TStrings;
+  i:integer;
+begin
+  result:='';
+
+  if trim(AWorkGroup)='' then exit;
+
+  sResult:='';
+
+  sList:=TStringList.Create;
+  ExtractStrings([','],[],PChar(StringReplace(APreCheckID,'，',',',[rfReplaceAll,rfIgnoreCase])),sList);
+  if FormatDateTime('YYYY-MM-DD',Date)=APreDate then
+  begin
+    for i :=0  to sList.Count-1 do
+    begin
+      sResult:=sResult+GetNextValue(sList[i])+',';
+    end;
+  end
+  else begin
+    for i :=0  to sList.Count-1 do
+    begin
+      sResult:=sResult+GetFirstValue(sList[i])+',';
+    end;
+  end;
+  sList.Free;
+  
+  if(sResult<>'')and(sResult[length(sResult)]=',')then sResult:=copy(sResult,1,length(sResult)-1);
+    
+  //=======将string转换为pchar
+  try
+    GetMem(Result,length(sResult)+1) ;
+  except
+    Result := nil ;
+  end ;
+  if assigned(Result) then
+  begin
+    StrPLCopy(Result,sResult,length(sResult)) ;
+    Result[length(sResult)] := #0;
+  end;
+  //==============================  
+end;
+
 Exports
 manystr,
 RangeStrToSql,
@@ -1203,7 +1315,8 @@ CRC16,
 EnCryptStr,
 DeCryptStr,
 BcdToStr,
-UnicodeToChinese;
+UnicodeToChinese,
+GetMaxCheckID;
 
 begin
 end.
