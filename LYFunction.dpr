@@ -1292,6 +1292,40 @@ begin
   //==============================  
 end;
 
+//内存流转字符串
+//背景:华银康将图片转换为Base64后保存在image类型字段,故,解析图片时,需要将image字段取出来后转换为字符串
+//官方提供的TStringStream(AStream).DataString也能将内存流转为字符串,但不知何故,转出来的字符串最后多了几个乱码
+function StreamToString(AStream:TStream):PChar;stdcall;
+var
+  sResult:String;
+  i:Integer;
+begin
+  Result:='';sResult:='';
+  
+  if not Assigned(AStream) then Exit;
+  SetLength(sResult,AStream.Size);
+  for i:=0 to Pred(AStream.Size) do
+  try
+    AStream.Position:=i;
+    AStream.Read(sResult[Succ(i)],1);
+  except
+    sResult:='';
+  end;
+    
+  //=======将string转换为pchar
+  try
+    GetMem(Result,length(sResult)+1) ;
+  except
+    Result := nil ;
+  end ;
+  if assigned(Result) then
+  begin
+    StrPLCopy(Result,sResult,length(sResult)) ;
+    Result[length(sResult)] := #0;
+  end;
+  //==============================  
+end;
+  
 Exports
 manystr,
 RangeStrToSql,
@@ -1316,7 +1350,8 @@ EnCryptStr,
 DeCryptStr,
 BcdToStr,
 UnicodeToChinese,
-GetMaxCheckID;
+GetMaxCheckID,
+StreamToString;
 
 begin
 end.
