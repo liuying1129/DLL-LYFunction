@@ -1294,7 +1294,7 @@ end;
 
 //内存流转字符串
 //背景:华银康将图片转换为Base64后保存在image类型字段,故,解析图片时,需要将image字段取出来后转换为字符串
-//官方提供的TStringStream(AStream).DataString也能将内存流转为字符串,但不知何故,转出来的字符串最后多了几个乱码(#$AB开头的乱码串,删除这段应该就可以)
+//官方提供的TStringStream(AStream).DataString也能将内存流转为字符串,但不知何故,转出来的字符串最后多了几个乱码(#$AB开头的乱码串,删除这段就可以了)
 function StreamToString(AStream:TStream):PChar;stdcall;
 var
   sResult:String;
