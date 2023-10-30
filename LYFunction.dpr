@@ -715,6 +715,50 @@ begin
   //==============================  
 end;
 
+FUNCTION Decode2Byte(AStr:ShortString):Word;stdcall;
+//将2字节字符串转换为无符号整数
+//无符号16位整数,取值范围0-65535
+//参数可能为#$00#$01的形式,故不能用PChar
+//使用ShortString而非String,避免引用ShareMem单元及BORLNDMM.DLL
+//该函数使用ShortString类型,故只能Delphi调用
+//ShortString最多容纳255个字符
+begin
+  result:=0;
+  if length(AStr)<>2 then exit;
+
+  result:=256*ord(AStr[1])+ord(AStr[2]);
+end;
+
+FUNCTION Decode2ByteNPN(AStr:ShortString):Smallint;stdcall;
+//将2字节字符串转换为有符号整数
+//有符号16位整数,取值范围-32768至32767
+//最高位表示正负,1为负,0为正
+//参数可能为#$00#$01的形式,故不能用PChar
+//使用ShortString而非String,避免引用ShareMem单元及BORLNDMM.DLL
+//该函数使用ShortString类型,故只能Delphi调用
+//ShortString最多容纳255个字符
+begin
+  result:=0;
+  if length(AStr)<>2 then exit;
+
+  if ord(AStr[1])<128 then result:=256*ord(AStr[1])+ord(AStr[2])//正数
+    else result:=-(256*(ord(AStr[1])-128)+ord(AStr[2]));//负数
+end;
+
+FUNCTION Decode4Byte(AStr:ShortString):Cardinal;stdcall;
+//将4字节字符串转换为无符号整数
+//无符号32位整数,取值范围0-4294967295
+//参数可能为#$A2#$B3#$00#$01的形式,故不能用PChar
+//使用ShortString而非String,避免引用ShareMem单元及BORLNDMM.DLL
+//该函数使用ShortString类型,故只能Delphi调用
+//ShortString最多容纳255个字符
+begin
+  result:=0;
+  if length(AStr)<>4 then exit;
+
+  result:=ord(AStr[3])*16777216+ord(AStr[4])*65536+ord(AStr[1])*256+ord(AStr[2]);
+end;
+
 procedure WriteLog(const ALogStr: Pchar);stdcall;
 //写日志文件
 Var
@@ -1340,6 +1384,9 @@ IntToBin,
 BinToInt,
 ByteToReal,
 RealTo4Byte,
+Decode2Byte,
+Decode2ByteNPN,
+Decode4Byte,
 WriteLog,
 LastPos,
 CassonEquation,
