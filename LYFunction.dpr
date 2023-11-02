@@ -746,7 +746,7 @@ begin
     else result:=-(256*(ord(AStr[1])-128)+ord(AStr[2]));//负数
 end;
 
-FUNCTION Decode2ByteCC(S:STRING):Smallint;stdcall;
+FUNCTION Decode2ByteCC(AStr:ShortString):Smallint;stdcall;
 //将2字节字符串转换为有符号整数
 //补码(这种方式应该是补码吧,我猜测的)
 //有符号16位整数,取值范围-32768至32767
@@ -758,11 +758,11 @@ var
   J:Int64;
 begin
   result:=0;
-  if length(s)<>2 then exit;
+  if length(AStr)<>2 then exit;
 
-  J:=256*ord(s[1])+ord(s[2]);
+  J:=256*ord(AStr[1])+ord(AStr[2]);
   
-  if ord(s[1])>=128 then
+  if ord(AStr[1])>=128 then
   BEGIN
     J := -J;
     J := J and $FFFF;
@@ -785,7 +785,7 @@ begin
   result:=ord(AStr[3])*16777216+ord(AStr[4])*65536+ord(AStr[1])*256+ord(AStr[2]);
 end;
 
-FUNCTION Decode4ByteCC(S:STRING):Longint;stdcall;
+FUNCTION Decode4ByteCC(AStr:ShortString):Longint;stdcall;
 //将4字节字符串转换为有符号整数
 //补码(这种方式应该是补码吧,我猜测的)
 //有符号32位整数,取值范围-2147483648至2147483647
@@ -797,11 +797,11 @@ var
   J:Int64;
 begin
   result:=0;
-  if length(s)<>4 then exit;
+  if length(AStr)<>4 then exit;
 
-  J:=ord(s[3])*16777216+ord(s[4])*65536+ord(s[1])*256+ord(s[2]);
+  J:=ord(AStr[3])*16777216+ord(AStr[4])*65536+ord(AStr[1])*256+ord(AStr[2]);
   
-  if ord(s[3])>=128 then
+  if ord(AStr[3])>=128 then
   BEGIN
     J := -J;
     J := J and $FFFFFFFF;
