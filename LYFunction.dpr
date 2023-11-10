@@ -729,6 +729,22 @@ begin
   result:=256*ord(AStr[1])+ord(AStr[2]);
 end;
 
+FUNCTION Encode2Byte(AWord:Word):ShortString;stdcall;
+//将2字节无符号整数转换为2字节字符串
+//无符号16位整数,取值范围0-65535
+//例如:19202转换为#$4B#$02
+//返回值可能为#$00#$01的形式,故不能用PChar
+//使用ShortString而非String,避免引用ShareMem单元及BORLNDMM.DLL
+//该函数使用ShortString类型,故只能Delphi调用
+//ShortString最多容纳255个字符
+var
+  ss:string;
+begin
+  ss:=format('0000'+'%.x',[AWord]);
+  ss:=rightstr(ss,4);
+  result:=chr(strtoint('$'+copy(ss,1,2)))+chr(strtoint('$'+copy(ss,3,2)));
+end;
+
 FUNCTION Decode2ByteOC(AStr:ShortString):Smallint;stdcall;
 //将2字节字符串转换为有符号整数
 //原码
@@ -1436,6 +1452,7 @@ BinToInt,
 ByteToReal,
 RealTo4Byte,
 Decode2Byte,
+Encode2Byte,
 Decode2ByteOC,
 Decode2ByteCC,
 Decode4Byte,
