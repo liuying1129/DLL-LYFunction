@@ -28,6 +28,8 @@ type
   TSData = array[0..63] of Byte;
   TBlock = array[0..7] of Byte;
 
+  TByte4 = array[1..4] of Byte;
+
 {$R *.res}
 
 const
@@ -660,6 +662,19 @@ begin
   if (StrBin1[1] = '1') then  result:= 0 - result;
 end;
 
+//4个byte转换成IEEE 754浮点数
+function PackByteToFloat(AByte1,AByte2,AByte3,AByte4:byte):Single;stdcall;
+var
+  input:record b1,b2,b3,b4:Byte end;
+  output:Single absolute input;
+begin
+  input.b1 := AByte1;
+  input.b2 := AByte2;
+  input.b3 := AByte3;
+  input.b4 := AByte4;
+  Result:= output;
+end;
+
 function RealTo4Byte(AReal:single):Pchar;stdcall;
 var
   //20110513暂时不支持负数，不支持纯小数，如0.123
@@ -714,6 +729,13 @@ begin
     Result[length(sResult)] := #0;
   end;
   //==============================  
+end;
+
+//IEEE 754浮点数转换成4个byte
+//注:函数调用方需定义类型TByte4
+function FloatTo4Byte(AReal:Single):TByte4;stdcall;
+begin
+  Move(AReal,Result,sizeof(AReal));
 end;
 
 FUNCTION Decode2Byte(AStr:ShortString):Word;stdcall;
@@ -1451,7 +1473,9 @@ StrToHex,
 IntToBin,
 BinToInt,
 ByteToReal,
+PackByteToFloat,
 RealTo4Byte,
+FloatTo4Byte,
 Decode2Byte,
 Encode2Byte,
 Decode2ByteOC,
