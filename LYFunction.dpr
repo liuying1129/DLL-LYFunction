@@ -567,6 +567,35 @@ begin
   //==============================
 end;
 
+function Str2Hex(const ASourStr:ShortString):Pchar;stdcall;
+//参数可能为#$00#$01的形式,故不能用PChar
+//使用ShortString而非String,避免引用ShareMem单元及BORLNDMM.DLL
+//该函数使用ShortString类型,故只能Delphi调用
+//ShortString最多容纳255个字符
+var
+  i:integer;
+  sresult: string;
+begin
+  sresult:='';
+  for i :=1  to length(ASourStr) do
+  begin
+    sresult:=sresult+inttohex(ord(ASourStr[i]),2)+' ';
+  end;
+
+  //=======将string转换为pchar
+  try
+    GetMem(Result,length(sResult)+1) ;
+  except
+    Result := nil ;
+  end ;
+  if assigned(Result) then
+  begin
+    StrPLCopy(Result,sResult,length(sResult)) ;
+    Result[length(sResult)] := #0;
+  end;
+  //==============================
+end;
+
 function IntToBin(AInt: integer):Pchar;stdcall;
 //十进制转换为二进制字符串
 //add by ly 2009-08-31
@@ -1470,6 +1499,7 @@ GetVersionLY,
 GetSysCurImeName,
 GetHDSn,
 StrToHex,
+Str2Hex,
 IntToBin,
 BinToInt,
 ByteToReal,
