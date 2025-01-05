@@ -781,7 +781,10 @@ begin
   result:=256*ord(AStr[1])+ord(AStr[2]);
 end;
 
-FUNCTION Encode2Byte(AWord:Word):ShortString;stdcall;
+FUNCTION Encode2Byte(AWord:Word):ShortString;stdcall;deprecated;
+//完全可以被内部函数IntToHex取代,且IntToHex适用范围更广（可转换64位有符号整数）
+//例如,15535,Encode2Byte转换后是2个字符chr(60)chr(175),IntToHex(15535,4)转换后是3CAF
+
 //将2字节无符号整数转换为2字节字符串
 //无符号16位整数,取值范围0-65535
 //例如:19202转换为#$4B#$02
@@ -795,7 +798,7 @@ begin
   ss:=format('0000'+'%.x',[AWord]);
   ss:=rightstr(ss,4);
   result:=chr(strtoint('$'+copy(ss,1,2)))+chr(strtoint('$'+copy(ss,3,2)));
-end;
+end;//}
 
 FUNCTION Decode2ByteOC(AStr:ShortString):Smallint;stdcall;
 //将2字节字符串转换为有符号整数
