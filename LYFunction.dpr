@@ -784,6 +784,7 @@ end;
 FUNCTION Encode2Byte(AWord:Word):ShortString;stdcall;deprecated;
 //完全可以被内部函数IntToHex取代,且IntToHex适用范围更广（可转换64位有符号整数）
 //例如,15535,Encode2Byte转换后是2个字符chr(60)chr(175),IntToHex(15535,4)转换后是3CAF
+//对于16位有符号整数,使用Hi、Lo函数更简洁,如Hi(15535)=60,Li(15535)=175
 
 //将2字节无符号整数转换为2字节字符串
 //无符号16位整数,取值范围0-65535
